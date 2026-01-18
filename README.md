@@ -1,6 +1,7 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## 별소프트 사다리게임
+소스 참고: https://github.com/kimdj2/GhostLeg/tree/master
 
 ## Getting Started
 
