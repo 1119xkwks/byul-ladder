@@ -1,11 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## 별소프트 사다리게임 (Byulsoft Ladder Game)
 
-## 별소프트 사다리게임
-소스 참고: https://github.com/kimdj2/GhostLeg/tree/master
+Next.js로 구현된 인터랙티브 사다리 게임 프로젝트입니다.
 
-## Getting Started
+## 🚀 주요 기능
 
-First, run the development server:
+- **실시간 사다리 경로 확인**: Canvas를 활용한 부드러운 선 그리기 및 애니메이션 기능을 제공합니다.
+- **다양한 확인 모드**:
+  - **개별 확인**: 상단 참가자 영역을 클릭하여 특정 참가자의 사다리 타기 경로를 시각적으로 확인합니다.
+  - **결과 순차 확인**: '결과보기' 버튼을 통해 모든 참가자의 결과를 순차적으로 탐색합니다.
+  - **결과 즉시 확인**: 애니메이션 없이 모든 결과를 한 번에 확인하고 요약된 결과를 확인할 수 있습니다.
+- **인터랙티브 UI**: 진행 상황에 따라 버튼 상태가 동적으로 변경되며, 사다리 타기 중에는 조작을 방지하는 안전 장치가 포함되어 있습니다.
+- **커스터마이징**: 참가자별 지정된 색상을 통해 경로 식별이 용이하며, 세련된 다크 모드 스타일의 디자인을 제공합니다.
+
+## 🛠 Tech Stack
+
+- **Framework**: [Next.js 15+](https://nextjs.org/) (App Router)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: Vanilla CSS (CSS Modules)
+- **Graphics**: HTML5 Canvas
+- **State Management**: React Hooks (Custom Hooks)
+
+## 📖 소스 및 참고
+
+- **Original Source**: [GhostLeg (kimdj2)](https://github.com/kimdj2/GhostLeg/tree/master)
+- 원본 프로젝트의 사다리 로직을 참고하여, Next.js 환경에 맞춰 현대적으로 리팩토링 및 고도화 작업을 진행하였습니다.
+
+## 🏁 Getting Started
+
+개발 서버를 실행하여 프로젝트를 확인해 보세요:
 
 ```bash
 npm run dev
@@ -17,23 +39,7 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+브라우저에서 [http://localhost:3000](http://localhost:3000)을 열어 결과를 볼 수 있습니다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`src/app/page.tsx`를 수정하여 페이지 편집을 시작할 수 있습니다. 파일을 수정하면 페이지가 자동으로 업데이트됩니다.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

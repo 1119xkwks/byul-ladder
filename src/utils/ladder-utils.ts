@@ -103,6 +103,7 @@ export const generateRandomNodeData = (widthNode: number, heightNode: number): F
  * @param {number} width 선 두께
  * @param {number} eachWidth 칸 너비
  * @param {number} eachHeight 칸 높이
+ * @param {boolean} isLightMode 배경이 밝은색인지 여부 (기본값: false)
  */
 export const strokeLine = (
     ctx: CanvasRenderingContext2D,
@@ -113,7 +114,8 @@ export const strokeLine = (
     color: string,
     width: number,
     eachWidth: number = 100,
-    eachHeight: number = 25
+    eachHeight: number = 25,
+    isLightMode: boolean = false
 ): void => {
     const LOG_PREFIX = "[strokeLine] ";
     let moveToStart = 0;
@@ -140,12 +142,13 @@ export const strokeLine = (
         lineToEnd = (y + 1) * eachHeight;
     }
 
-    // 기본 사다리 선(#ddd)이 아닌 경우(참가자 경로인 경우) 흰색 테두리를 먼저 그려줌
+    // 기본 사다리 선(#ddd)이 아닌 경우(참가자 경로인 경우) 테두리를 먼저 그려줌
     if (color !== "#ddd") {
         ctx.beginPath();
         ctx.moveTo(moveToStart + 3, moveToEnd + 2);
         ctx.lineTo(lineToStart + 3, lineToEnd + 2);
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.8)"; // 화이트 테두리
+        // 배경색에 상반되는 테두리 색상 선택 (어두운 배경 -> 흰색 테두리, 밝은 배경 -> 어두운 테두리)
+        ctx.strokeStyle = isLightMode ? "rgba(0, 0, 0, 0.2)" : "rgba(255, 255, 255, 0.8)";
         ctx.lineWidth = width + 2; // 실제 선보다 약간 두껍게
         ctx.lineCap = "butt"; // 마디(Joint) 뭉침 방지
         ctx.stroke();

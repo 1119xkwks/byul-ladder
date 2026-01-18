@@ -47,6 +47,8 @@ export default function LadderGame() {
     const EACH_WIDTH = 100;
     // 사다리 한 칸의 세로 높이 (픽셀 단위)
     const EACH_HEIGHT = 25;
+    // 현재 배경이 밝은색인지 여부 (흰색/밝은 배경으로 변경 시 true로 설정)
+    const isLightMode = false;
 
     /**
      * 초기 사다리 라인( Poles & Crossbars )을 그립니다.
@@ -67,7 +69,7 @@ export default function LadderGame() {
         // 1. 세로 폴(Pole) 그리기
         for (let x = 0; x < memberCount; x++) {
             for (let y = 0; y < heightNode - 1; y++) {
-                strokeLine(ctx, x, y, "h", "d", "#ddd", 2, EACH_WIDTH, EACH_HEIGHT);
+                strokeLine(ctx, x, y, "h", "d", "#ddd", 2, EACH_WIDTH, EACH_HEIGHT, isLightMode);
             }
         }
 
@@ -78,11 +80,11 @@ export default function LadderGame() {
                 const nodeInfo = footPrint[nodeKey] as LadderNodeInfo;
                 // draw 속성이 "LEFT_TO_RIGHT"인 노드에서만 오른쪽으로 선을 그림
                 if (nodeInfo?.draw === "LEFT_TO_RIGHT") {
-                    strokeLine(ctx, x, y, "w", "r", "#ddd", 2, EACH_WIDTH, EACH_HEIGHT);
+                    strokeLine(ctx, x, y, "w", "r", "#ddd", 2, EACH_WIDTH, EACH_HEIGHT, isLightMode);
                 }
             }
         }
-    }, [canvasRef, footPrint, heightNode, memberCount]);
+    }, [canvasRef, footPrint, heightNode, memberCount, isLightMode]);
 
     /**
      * 게임 시작 버튼 클릭 핸들러
@@ -112,48 +114,54 @@ export default function LadderGame() {
         const FUNC_PREFIX = `${LOG_PREFIX}[handleUserStart] `;
         if (isWorking || isSequentialDrawing) return;
 
-        // 이미 결과가 있는 참여자인 경우, 해당 참여자의 결과만 지우고 다시 그려야 합니다.
-        const isRedrawing = Object.values(finalResults).includes(participants[index]);
-        if (isRedrawing) {
-            // 해당 참가자의 기존 매핑 결과 제거
-            const nextFinalResults = { ...finalResults };
-            Object.keys(nextFinalResults).forEach(key => {
-                if (nextFinalResults[Number(key)] === participants[index]) {
-                    delete nextFinalResults[Number(key)];
-                }
-            });
-            setFinalResults(nextFinalResults);
-            setIsAllFinished(false);
+        try {
+            // 이미 결과가 있는 참여자인 경우, 해당 참여자의 결과만 지우고 다시 그려야 합니다.
+            const isRedrawing = Object.values(finalResults).includes(participants[index]);
+            if (isRedrawing) {
+                // 해당 참가자의 기존 매핑 결과 제거
+                const nextFinalResults = { ...finalResults };
+                Object.keys(nextFinalResults).forEach(key => {
+                    if (nextFinalResults[Number(key)] === participants[index]) {
+                        delete nextFinalResults[Number(key)];
+                    }
+                });
+                setFinalResults(nextFinalResults);
+                setIsAllFinished(false);
 
-            // 1. 캔버스 리셋 및 기본선 그리기
-            drawInitialLadder();
+                // 1. 캔버스 리셋 및 기본선 그리기
+                drawInitialLadder();
 
-            // 2. 다른 완료된 참가자들의 선은 즉시(Sync) 다시 그려서 유지시킴
-            participants.forEach((name, i) => {
-                // 현재 클릭한 인덱스가 아니고, 이미 결과가 도출되어 있는 경우
-                if (i !== index && Object.values(nextFinalResults).includes(name)) {
-                    drawPathSync(i, participantColors[i]);
-                }
-            });
+                // 2. 다른 완료된 참가자들의 선은 즉시(Sync) 다시 그려서 유지시킴
+                participants.forEach((name, i) => {
+                    // 현재 클릭한 인덱스가 아니고, 이미 결과가 도출되어 있는 경우
+                    if (i !== index && Object.values(nextFinalResults).includes(name)) {
+                        drawPathSync(i, participantColors[i], isLightMode);
+                    }
+                });
+            }
+
+            const color = participantColors[index];
+            console.log(`${FUNC_PREFIX}user ${index} started drawing with color ${color}`);
+
+            startDrawing(index, color, (finalX) => {
+                console.log(`${FUNC_PREFIX}user ${index} reached result index ${finalX}`);
+                setFinalResults(prev => {
+                    const nextResults = {
+                        ...prev,
+                        [finalX]: participants[index]
+                    };
+                    // 모든 참가자의 결과가 나왔는지 검사
+                    if (Object.keys(nextResults).length === participants.length) {
+                        setIsAllFinished(true);
+                    }
+                    return nextResults;
+                });
+            }, 50, isLightMode);
+        } catch (e) {
+            console.error(`${FUNC_PREFIX}Error in handleUserStart:`, e);
+            if (e instanceof Error) console.error(e.stack);
+            alert("참가자 경로를 그리는 중 오류가 발생했습니다.");
         }
-
-        const color = participantColors[index];
-        console.log(`${FUNC_PREFIX}user ${index} started drawing with color ${color}`);
-
-        startDrawing(index, color, (finalX) => {
-            console.log(`${FUNC_PREFIX}user ${index} reached result index ${finalX}`);
-            setFinalResults(prev => {
-                const nextResults = {
-                    ...prev,
-                    [finalX]: participants[index]
-                };
-                // 모든 참가자의 결과가 나왔는지 검사
-                if (Object.keys(nextResults).length === participants.length) {
-                    setIsAllFinished(true);
-                }
-                return nextResults;
-            });
-        });
     };
 
     /**
@@ -201,13 +209,17 @@ export default function LadderGame() {
                             return updated;
                         });
                         resolve();
-                    }, 4); // 빠른 속도 (4)
+                    }, 4, isLightMode); // 빠른 속도 (4)
                 });
 
                 // 결과 사이의 미세한 간격
                 await new Promise(resolve => setTimeout(resolve, 100));
             }
             console.log(`${FUNC_PREFIX}finished sequential result view`);
+        } catch (e) {
+            console.error(`${FUNC_PREFIX}Error occurred during handleViewResults:`, e);
+            if (e instanceof Error) console.error(e.stack);
+            alert("결과를 처리하는 도중 오류가 발생했습니다.");
         } finally {
             setIsSequentialDrawing(false);
         }
