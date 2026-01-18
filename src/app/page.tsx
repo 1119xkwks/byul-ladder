@@ -1,7 +1,9 @@
+import LadderGame from "@/components/LadderGame/LadderGame";
+
 export default function Home() {
   return (
     <main>
-      <h3>hello world</h3>
+      <LadderGame />
     </main>
   );
 }
